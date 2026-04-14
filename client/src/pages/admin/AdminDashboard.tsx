@@ -175,6 +175,12 @@ const AdminDashboard = () => {
     }
   };
 
+  const formatStatus = (status: string) => {
+    const value = String(status || '').trim();
+    if (!value) return '';
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-5">
@@ -362,47 +368,49 @@ const AdminDashboard = () => {
               {newOrders.map((order, idx) => (
                 <div
                   key={order.id}
-                  className="px-1 sm:px-2 py-3 sm:py-4 hover:bg-gray-50/60 transition-colors"
+                  className="group relative px-1 sm:px-2 py-3 sm:py-4 rounded-xl hover:bg-gray-50/60 transition-colors"
                   style={{
                     animationDelay: `${idx * 0.05}s`,
                     animation: 'fadeInUp 0.4s ease-out forwards',
                   }}
                 >
+                  <div className={`absolute left-0 top-3 bottom-3 w-0.5 rounded-full ${getStatusDotClasses(order.status)}`} aria-hidden="true" />
+
                   <div className="md:hidden space-y-2">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="min-w-0 pl-2">
                         <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${getStatusDotClasses(order.status)}`} />
-                          <p className="text-sm font-bold text-gray-900 truncate">{order.orderId}</p>
+                          <p className="text-sm font-extrabold text-gray-900 truncate">{order.orderId}</p>
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${getStatusBadgeClasses(order.status)}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotClasses(order.status)}`} />
+                            {formatStatus(order.status)}
+                          </span>
                         </div>
-                        <p className="mt-0.5 text-xs text-gray-500 truncate">{order.product}</p>
                         <p className="mt-0.5 text-[11px] text-gray-400">{formatDate(order.createdAt)}</p>
+                        <p className="mt-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</p>
+                        <p className="mt-0.5 text-sm font-semibold text-gray-900 truncate">{order.product}</p>
                       </div>
 
                       <div className="text-right shrink-0">
                         <p className="text-base font-extrabold text-gray-900 tabular-nums">
                           ${order.amount.toFixed(2)}
                         </p>
-                        <span className={`mt-1 inline-flex items-center gap-1 text-[10px] font-semibold ${getStatusBadgeClasses(order.status)}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotClasses(order.status)}`} />
-                          {order.status}
-                        </span>
+                        <p className="mt-0.5 text-[10px] font-semibold text-gray-400">USD</p>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-500 truncate pl-2">
                         <span className="font-semibold text-gray-400">Customer:</span> {order.customer}
                       </p>
                     </div>
                   </div>
 
                   <div className="hidden md:grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-3 min-w-0">
+                    <div className="col-span-3 min-w-0 pl-2">
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${getStatusDotClasses(order.status)}`} />
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate">{order.orderId}</p>
+                          <p className="text-sm font-extrabold text-gray-900 truncate">{order.orderId}</p>
                           <p className="text-[11px] text-gray-400">{formatDate(order.createdAt)}</p>
                         </div>
                       </div>
@@ -425,7 +433,7 @@ const AdminDashboard = () => {
                     <div className="col-span-1 flex justify-end">
                       <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${getStatusBadgeClasses(order.status)}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotClasses(order.status)}`} />
-                        {order.status}
+                        {formatStatus(order.status)}
                       </span>
                     </div>
                   </div>

@@ -77,10 +77,10 @@ const AdminLayout = () => {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="px-4 pt-3 pb-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+          <div className="px-4 pt-3 pb-4 border-b border-gray-200 bg-white">
             <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3 lg:hidden" />
             <div className="flex items-center justify-between">
-              <Link to="/admin/dashboard" className="flex items-center space-x-2 text-lg font-bold text-gray-900 hover:text-primary-700 transition-colors">
+              <Link to="/admin/dashboard" className="flex items-center gap-2 text-lg font-bold text-gray-900 hover:text-primary-700 transition-colors">
                 <div className="w-8 h-8 bg-primary-50 border border-primary-100 flex items-center justify-center rounded-lg">
                   <span className="text-base font-bold text-primary-700">{env.appName.charAt(0).toUpperCase()}</span>
                 </div>
@@ -100,7 +100,7 @@ const AdminLayout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-3 space-y-2.5 overflow-y-auto">
+          <nav className="flex-1 px-4 py-3 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
@@ -117,7 +117,7 @@ const AdminLayout = () => {
                 >
                   <div className="flex items-center">
                     <Icon className={`mr-3 w-5 h-5 ${active ? 'text-primary-700' : 'text-gray-500'}`} />
-                    {item.name}
+                    <span>{item.name}</span>
                   </div>
                   <span className={`text-xs ${active ? 'text-primary-500' : 'text-gray-300'}`}>›</span>
                 </Link>
@@ -147,7 +147,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-80">
+      <div className="lg:pl-64">
         {/* Top navbar */}
         <nav className="bg-white sticky top-0 z-20" style={{ borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 12px rgba(0,0,0,0.05)' }}>
           <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #2563eb, #60a5fa, #2563eb)' }} />
