@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { initializeSocket } from '../../services/socket/socket';
 import { userService, type Transaction } from '../../services/api/userService';
-import { categoryService, type Category } from '../../services/api/categoryService';
 import { HiPlus, HiCheckCircle, HiClock, HiXCircle, HiOutlineShoppingCart, HiRefresh } from 'react-icons/hi';
 
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [balance, setBalance] = useState<number>(0.00);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [popularCategories, setPopularCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
 
@@ -25,14 +22,6 @@ const Dashboard = () => {
         ]);
         setBalance(balanceData);
         setTransactions(transactionsData);
-
-        try {
-          const categoryData = await categoryService.getCategories();
-          setPopularCategories(categoryData.slice(0, 3));
-        } catch (categoryError) {
-          console.error('Failed to fetch categories:', categoryError);
-          setPopularCategories([]);
-        }
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
         // Keep default values on error
