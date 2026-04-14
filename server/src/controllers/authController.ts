@@ -6,6 +6,7 @@ import Session from '../models/Session';
 import { generateToken as generateJWT } from '../utils/jwt';
 import { generateToken, sendPasswordResetEmail } from '../utils/emailHelpers';
 import { verifyTelegramInitData } from '../utils/telegramAuth';
+import { notifyUser } from '../utils/telegramNotify';
 
 // Register a new user
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -542,14 +543,24 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     user.resetPasswordExpires = resetPasswordExpires;
     await user.save();
 
-    // Send reset email
     try {
-      await sendPasswordResetEmail(user.email, resetToken);
+      const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+      if (user.telegramId) {
+        notifyUser(
+          user.telegramId,
+          `🔐 <b>Password reset</b>\n` +
+            `Open this link to set a new password:\n` +
+            `${resetUrl}\n\n` +
+            `This link expires in 1 hour.`
+        );
+      } else {
+        await sendPasswordResetEmail(user.email, resetToken);
+      }
     } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError);
+      console.error('Failed to send password reset notification:', emailError);
       res.status(500).json({
         success: false,
-        message: 'Failed to send password reset email',
+        message: 'Failed to send password reset notification',
       });
       return;
     }

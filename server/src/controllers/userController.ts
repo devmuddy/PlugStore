@@ -8,8 +8,7 @@ import Transaction from '../models/Transaction';
 import Category from '../models/Category';
 import User from '../models/User';
 import PaymentMethod from '../models/PaymentMethod';
-import { sendOrderConfirmationEmail, sendDepositSubmissionEmail } from '../utils/emailHelpers';
-import { notifyAdmin } from '../utils/telegramNotify';
+import { notifyAdmin, notifyUser } from '../utils/telegramNotify';
 
 // Get user balance
 export const getBalance = async (req: Request, res: Response): Promise<void> => {
@@ -531,23 +530,18 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
       status: 'completed', // Set to completed immediately after successful debit
     });
 
-    // Get user info for email
-    const user = await User.findById(userId).select('email username').lean();
+    // Get user info for notification
+    const user = await User.findById(userId).select('email username telegramId').lean();
     
-    // Send confirmation email (non-blocking)
-    if (user) {
+    if (user?.telegramId) {
       const orderNumber = `ORD-${order._id.toString().slice(-6).toUpperCase()}`;
-      sendOrderConfirmationEmail(
-        user.email,
-        user.username,
-        orderNumber,
-        product.name,
-        totalPrice,
-        order._id.toString()
-      ).catch((emailError) => {
-        console.error('Failed to send order confirmation email:', emailError);
-        // Don't fail the request if email fails
-      });
+      notifyUser(
+        user.telegramId,
+        `✅ <b>Order confirmed</b>\n` +
+          `Order: ${orderNumber}\n` +
+          `Product: ${product.name}\n` +
+          `Total: $${totalPrice.toFixed(2)}`
+      );
     }
 
     // Emit socket event for real-time update (if socket is available)
@@ -691,7 +685,7 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
     }
 
     // Get user info
-    const user = await User.findById(userId).select('email username').lean();
+    const user = await User.findById(userId).select('email username telegramId').lean();
     if (!user) {
       res.status(404).json({
         success: false,
@@ -718,17 +712,16 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
       `🆔 Deposit ID: ${deposit._id.toString()}`
     );
 
-    // Send confirmation email to user (non-blocking)
-    sendDepositSubmissionEmail(
-      user.email,
-      user.username,
-      depositAmount,
-      paymentMethod.symbol,
-      transactionId.trim(),
-      deposit._id.toString()
-    ).catch((emailError) => {
-      console.error('Failed to send deposit submission email:', emailError);
-    });
+    if (user.telegramId) {
+      notifyUser(
+        user.telegramId,
+        `💰 <b>Deposit submitted</b>\n` +
+          `Amount: ${paymentMethod.symbol} ${depositAmount}\n` +
+          `Status: Pending review\n` +
+          `Tx Hash: ${transactionId.trim()}\n` +
+          `Deposit ID: ${deposit._id.toString()}`
+      );
+    }
 
     res.json({
       success: true,

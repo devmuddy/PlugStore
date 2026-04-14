@@ -7,7 +7,6 @@ import Product from '../models/Product';
 import Category from '../models/Category';
 import Deposit from '../models/Deposit';
 import PaymentMethod from '../models/PaymentMethod';
-import { sendBalanceUpdateEmail } from '../utils/emailHelpers';
 import { notifyUser } from '../utils/telegramNotify';
 import { deleteImage } from '../config/cloudinary';
 
@@ -64,7 +63,7 @@ export const updateUserBalance = async (req: Request, res: Response): Promise<vo
       });
     }
 
-    // Store previous balance for email notification
+    // Store previous balance for notification
     const previousBalance = wallet.balance;
 
     // Calculate new balance
@@ -93,19 +92,18 @@ export const updateUserBalance = async (req: Request, res: Response): Promise<vo
       description: `Admin ${action === 'add' ? 'added' : 'subtracted'} balance`,
     });
 
-    // Send email notification (don't fail if email fails)
-    try {
-      await sendBalanceUpdateEmail(
-        user.email,
-        user.username,
-        action === 'add' ? 'credit' : 'debit',
-        amountNum,
-        previousBalance,
-        newBalance
+    if (user.telegramId) {
+      const formatMoney = (value: number): string =>
+        value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      notifyUser(
+        user.telegramId,
+        `<b>Balance update</b>\n` +
+          `Action: ${action === 'add' ? 'Credit' : 'Debit'}\n` +
+          `Amount: ${action === 'add' ? '+' : '-'}$${formatMoney(amountNum)}\n` +
+          `Previous: $${formatMoney(previousBalance)}\n` +
+          `New: $${formatMoney(newBalance)}`
       );
-    } catch (emailError) {
-      console.error('Failed to send balance update email:', emailError);
-      // Continue even if email fails - balance update was successful
     }
 
     res.json({
