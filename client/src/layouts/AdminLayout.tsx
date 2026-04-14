@@ -149,60 +149,40 @@ const AdminLayout = () => {
       {/* Main content */}
       <div className="lg:pl-80">
         {/* Top navbar */}
-        <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-10">
+        <nav className="bg-white sticky top-0 z-20" style={{ borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 12px rgba(0,0,0,0.05)' }}>
+          <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #2563eb, #60a5fa, #2563eb)' }} />
           <div className="px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
+            <div className="flex justify-between items-center h-14">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden text-gray-500 hover:text-gray-700 transition-colors"
+                  className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <HiMenu className="w-6 h-6" />
+                  <HiMenu className="w-5 h-5" />
                 </button>
-                <div className="ml-4 lg:ml-0">
-                  <h2 className="text-sm sm:text-base font-semibold text-gray-800">
-                    Hello, <span className="text-primary-600">{user?.username || user?.email?.split('@')[0] || 'Admin'}</span>
+                <div>
+                  <p className="text-[11px] text-gray-400 font-light tracking-wide">Welcome back</p>
+                  <h2 className="auth-heading text-sm font-bold text-gray-900 leading-tight">
+                    {user?.username || user?.email?.split('@')[0] || 'Admin'}
                   </h2>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="flex items-center space-x-2 bg-primary-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {isLoggingOut ? (
-                    <>
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      <span>Logging out...</span>
-                    </>
-                  ) : (
-                    <>
-                      <HiLogout className="w-4 h-4" />
-                      <span>Logout</span>
-                    </>
-                  )}
-                </button>
-              </div>
+
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoggingOut ? (
+                  <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <HiLogout className="w-3.5 h-3.5" />
+                )}
+                <span>{isLoggingOut ? 'Logging out…' : 'Logout'}</span>
+              </button>
             </div>
           </div>
         </nav>
