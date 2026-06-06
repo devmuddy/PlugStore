@@ -143,400 +143,189 @@ const Deposits = () => {
     return `${hash.substring(0, 10)}...${hash.substring(hash.length - 8)}`;
   };
 
-  const getInitials = (email: string, username?: string) => {
-    if (username) {
-      return username.substring(0, 2).toUpperCase();
-    }
-    return email.substring(0, 2).toUpperCase();
-  };
-
   const pendingCount = deposits.filter((d) => d.status === 'pending').length;
 
   return (
     <div className="space-y-5">
-      {/* Page Header */}
-      <div className="space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Deposits Management</h1>
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="h-8 w-8 inline-flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Refresh deposits"
-              title="Refresh deposits"
-            >
-              <HiRefresh className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-          <p className="mt-1 text-xs sm:text-sm text-gray-600">
-            Review and manage user deposits
-          </p>
+          <h1 className="text-lg font-bold text-gray-900">Deposits</h1>
+          <p className="text-xs text-gray-500 mt-0.5">{pendingCount} pending</p>
         </div>
-        <p className="text-xs sm:text-sm text-gray-600">
-          {pendingCount} pending deposit{pendingCount === 1 ? '' : 's'}
-        </p>
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="h-8 w-8 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 bg-white border border-gray-200 rounded-lg transition-colors disabled:opacity-50"
+        >
+          <HiRefresh className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+        </button>
       </div>
 
-
-      {/* Mobile Card View */}
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-        </div>
-      ) : (
-        <div className="md:hidden">
-          {filteredDeposits.length > 0 ? (
-          filteredDeposits.map((deposit) => (
-            <div
-              key={deposit.id}
-              className={`py-3 ${deposit.id !== filteredDeposits[filteredDeposits.length - 1]?.id ? 'border-b border-gray-200' : ''}`}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3 flex-1">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {getInitials(deposit.userEmail, deposit.username)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      {deposit.username || deposit.userEmail.split('@')[0]}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">{deposit.userEmail}</p>
-                  </div>
-                </div>
-                <span
-                  className={`inline-flex items-center text-xs font-semibold ${
-                    deposit.status === 'approved'
-                      ? 'text-green-700'
-                      : deposit.status === 'rejected'
-                      ? 'text-red-700'
-                      : 'text-amber-700'
-                  }`}
-                >
-                  {deposit.status}
-                </span>
-              </div>
-
-              <div className="space-y-3 pt-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500">Amount</span>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">
-                      ${deposit.amount.toFixed(2)}
-                    </p>
-                    <p className="text-xs text-gray-500">{deposit.currency}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-gray-500">Transaction Hash</span>
-                    <button
-                      onClick={() => copyToClipboard(deposit.transactionHash)}
-                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                      title="Copy transaction hash"
-                    >
-                      <HiOutlineDocumentDuplicate className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <p className="text-xs font-mono text-gray-900">
-                    {truncateHash(deposit.transactionHash)}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500">Date</span>
-                  <span className="text-xs text-gray-600">{formatDate(deposit.createdAt)}</span>
-                </div>
-
-                {deposit.status === 'pending' && (
-                  <div className="flex items-center justify-end space-x-2 pt-2">
-                    <button
-                      onClick={() => openConfirmModal('approve', deposit.id)}
-                      disabled={isProcessing === deposit.id}
-                      className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isProcessing === deposit.id ? (
-                        <>
-                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          <span>Processing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <HiCheckCircle className="w-5 h-5" />
-                          <span>Approve</span>
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => openConfirmModal('reject', deposit.id)}
-                      disabled={isProcessing === deposit.id}
-                      className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isProcessing === deposit.id ? (
-                        <>
-                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          <span>Processing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <HiXCircle className="w-5 h-5" />
-                          <span>Reject</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="py-12 text-center">
-            <div className="flex flex-col items-center">
-              <HiOutlineCash className="w-12 h-12 text-gray-300 mb-3" />
-              <p className="text-sm font-medium text-gray-900 mb-1">No deposits found</p>
-              <p className="text-xs text-gray-500">No pending deposits</p>
-            </div>
+      {/* Deposits Table */}
+      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-600 border-t-transparent" />
           </div>
-        )}
-        </div>
-      )}
-
-      {/* Desktop Table View */}
-      {isLoading ? (
-        <div className="hidden md:flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-        </div>
-      ) : (
-        <div className="hidden md:block overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-3 sm:px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-3 sm:px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-3 sm:px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Transaction Hash
-                </th>
-                <th className="px-3 sm:px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                  Date
-                </th>
-                <th className="px-3 sm:px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-3 sm:px-4 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredDeposits.length > 0 ? (
-                filteredDeposits.map((deposit) => (
-                  <tr key={deposit.id} className="transition-colors">
-                    <td className="px-3 sm:px-4 py-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              {getInitials(deposit.userEmail, deposit.username)}
-                            </span>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">User</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Tx Hash</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Date</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {filteredDeposits.length > 0 ? (
+                  filteredDeposits.map((deposit) => (
+                    <tr key={deposit.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-semibold text-gray-900">{deposit.username || deposit.userEmail.split('@')[0]}</p>
+                        <p className="text-[11px] text-gray-400">{deposit.userEmail}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-semibold text-gray-900">${deposit.amount.toFixed(2)}</p>
+                        <p className="text-[11px] text-gray-400">{deposit.currency}</p>
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono text-gray-500">{truncateHash(deposit.transactionHash)}</span>
+                          <button
+                            onClick={() => copyToClipboard(deposit.transactionHash)}
+                            className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                          >
+                            <HiOutlineDocumentDuplicate className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500 hidden lg:table-cell">{formatDate(deposit.createdAt)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded ${
+                          deposit.status === 'approved' ? 'text-emerald-700 bg-emerald-50' :
+                          deposit.status === 'rejected' ? 'text-red-700 bg-red-50' :
+                          'text-amber-700 bg-amber-50'
+                        }`}>
+                          {deposit.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {deposit.status === 'pending' ? (
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => openConfirmModal('approve', deposit.id)}
+                              disabled={isProcessing === deposit.id}
+                              className="h-7 w-7 inline-flex items-center justify-center text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors disabled:opacity-50"
+                              title="Approve"
+                            >
+                              {isProcessing === deposit.id ? (
+                                <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                              ) : (
+                                <HiCheckCircle className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => openConfirmModal('reject', deposit.id)}
+                              disabled={isProcessing === deposit.id}
+                              className="h-7 w-7 inline-flex items-center justify-center text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+                              title="Reject"
+                            >
+                              {isProcessing === deposit.id ? (
+                                <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                              ) : (
+                                <HiXCircle className="w-4 h-4" />
+                              )}
+                            </button>
                           </div>
+                        ) : (
+                          <span className="text-[11px] text-gray-400 capitalize">{deposit.status}</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-16 text-center">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
+                          <HiOutlineCash className="w-6 h-6 text-gray-400" />
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
-                            {deposit.username || deposit.userEmail.split('@')[0]}
-                          </p>
-                          <p className="text-xs text-gray-500 truncate">{deposit.userEmail}</p>
-                        </div>
+                        <p className="text-sm font-semibold text-gray-700 mb-1">No deposits found</p>
+                        <p className="text-xs text-gray-400">No pending deposits to review</p>
                       </div>
-                    </td>
-                    <td className="px-3 sm:px-4 py-3">
-                      <div>
-                        <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                          ${deposit.amount.toFixed(2)}
-                        </p>
-                        <p className="text-xs text-gray-500">{deposit.currency}</p>
-                      </div>
-                    </td>
-                    <td className="px-3 sm:px-4 py-3">
-                      <div className="flex items-center space-x-2 max-w-xs">
-                        <span className="text-xs font-mono text-gray-600 truncate">
-                          {truncateHash(deposit.transactionHash)}
-                        </span>
-                        <button
-                          onClick={() => copyToClipboard(deposit.transactionHash)}
-                          className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                          title="Copy transaction hash"
-                        >
-                          <HiOutlineDocumentDuplicate className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500 hidden lg:table-cell">
-                      <span>{formatDate(deposit.createdAt)}</span>
-                    </td>
-                    <td className="px-3 sm:px-4 py-3">
-                      <span
-                        className={`inline-flex items-center text-xs font-semibold ${
-                          deposit.status === 'approved'
-                            ? 'text-green-700'
-                            : deposit.status === 'rejected'
-                            ? 'text-red-700'
-                            : 'text-amber-700'
-                        }`}
-                      >
-                        {deposit.status}
-                      </span>
-                    </td>
-                    <td className="px-3 sm:px-4 py-3 text-right">
-                      {deposit.status === 'pending' ? (
-                        <div className="flex items-center justify-end space-x-1">
-                          <button
-                            onClick={() => openConfirmModal('approve', deposit.id)}
-                            disabled={isProcessing === deposit.id}
-                            className="p-2 text-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Approve deposit"
-                          >
-                            {isProcessing === deposit.id ? (
-                              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                            ) : (
-                              <HiCheckCircle className="w-5 h-5" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => openConfirmModal('reject', deposit.id)}
-                            disabled={isProcessing === deposit.id}
-                            className="p-2 text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Reject deposit"
-                          >
-                            {isProcessing === deposit.id ? (
-                              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                            ) : (
-                              <HiXCircle className="w-5 h-5" />
-                            )}
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-400">
-                          {deposit.status === 'approved' ? 'Approved' : 'Rejected'}
-                        </span>
-                      )}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center">
-                    <div className="flex flex-col items-center">
-                      <HiOutlineCash className="w-12 h-12 text-gray-300 mb-3" />
-                      <p className="text-xs sm:text-sm font-medium text-gray-900 mb-1">
-                        No deposits found
-                      </p>
-                      <p className="text-xs text-gray-500">No pending deposits</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-      )}
 
       {/* Confirmation Modal */}
       {confirmModal.isOpen && confirmModal.deposit && (
-        <div 
-          className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 p-4"
-          onClick={closeConfirmModal}
-        >
-          <div 
-            className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center space-x-3 mb-4">
-              {confirmModal.type === 'approve' ? (
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <HiCheckCircle className="w-6 h-6 text-green-600" />
-                </div>
-              ) : (
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                  <HiXCircle className="w-6 h-6 text-red-600" />
-                </div>
-              )}
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-sm w-full p-5 shadow-xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${
+                confirmModal.type === 'approve' ? 'bg-emerald-50' : 'bg-red-50'
+              }`}>
+                {confirmModal.type === 'approve' ? (
+                  <HiCheckCircle className="w-5 h-5 text-emerald-600" />
+                ) : (
+                  <HiXCircle className="w-5 h-5 text-red-500" />
+                )}
+              </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-gray-900">
                   {confirmModal.type === 'approve' ? 'Approve Deposit' : 'Reject Deposit'}
                 </h3>
-                <p className="text-sm text-gray-500">Are you sure you want to proceed?</p>
+                <p className="text-xs text-gray-500">Are you sure you want to proceed?</p>
               </div>
             </div>
-
-            <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">User:</span>
-                  <span className="font-medium text-gray-900">
-                    {confirmModal.deposit.username || confirmModal.deposit.userEmail.split('@')[0]}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Amount:</span>
-                  <span className="font-medium text-gray-900">
-                    ${confirmModal.deposit.amount.toFixed(2)} {confirmModal.deposit.currency}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Transaction Hash:</span>
-                  <span className="font-mono text-gray-900 text-xs">
-                    {truncateHash(confirmModal.deposit.transactionHash)}
-                  </span>
-                </div>
+            <div className="bg-gray-50 rounded-lg p-3 mb-4 space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">User:</span>
+                <span className="font-semibold text-gray-900">{confirmModal.deposit.username || confirmModal.deposit.userEmail.split('@')[0]}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Amount:</span>
+                <span className="font-semibold text-gray-900">${confirmModal.deposit.amount.toFixed(2)} {confirmModal.deposit.currency}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Tx Hash:</span>
+                <span className="font-mono text-gray-900 text-[10px]">{truncateHash(confirmModal.deposit.transactionHash)}</span>
               </div>
             </div>
-
-            <div className="flex items-center justify-end space-x-3">
-              <button
-                onClick={closeConfirmModal}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
+            <div className="flex items-center justify-end gap-2">
+              <button onClick={closeConfirmModal} className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 Cancel
               </button>
               <button
                 onClick={confirmModal.type === 'approve' ? handleApprove : handleReject}
                 disabled={isProcessing === confirmModal.depositId}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                  confirmModal.type === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-red-600 hover:bg-red-700'
+                className={`px-3 py-1.5 text-xs font-medium text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  confirmModal.type === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
                 }`}
               >
                 {isProcessing === confirmModal.depositId ? (
-                  <span className="flex items-center space-x-2">
-                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <span className="flex items-center gap-1.5">
+                    <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Processing...</span>
+                    Processing...
                   </span>
                 ) : (
                   confirmModal.type === 'approve' ? 'Approve' : 'Reject'
