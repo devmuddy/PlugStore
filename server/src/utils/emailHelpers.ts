@@ -155,3 +155,63 @@ export const sendDepositSubmissionEmail = async (
     console.error('Failed to send deposit submission email:', error);
   }
 };
+
+export const sendDepositApprovedEmail = async (
+  email: string,
+  username: string | undefined,
+  amount: number,
+  currency: string,
+  newBalance: number
+): Promise<void> => {
+  const appName = getAppName();
+
+  try {
+    await sendMail({
+      to: email,
+      subject: `Deposit Approved - ${currency} ${money(amount)} - ${appName}`,
+      html: renderEmail(
+        appName,
+        'Deposit approved',
+        `Hello ${username || 'User'}, your deposit has been approved and your wallet has been credited.`,
+        [
+          row('Amount', `${currency} ${money(amount)}`),
+          row('Status', 'Approved'),
+          row('New balance', `$${money(newBalance)}`),
+        ].join(''),
+        ['If you have questions, contact support.', 'This is an automated notification.']
+      ),
+    });
+    console.log(`Deposit approved email sent to ${email}`);
+  } catch (error) {
+    console.error('Failed to send deposit approved email:', error);
+  }
+};
+
+export const sendDepositRejectedEmail = async (
+  email: string,
+  username: string | undefined,
+  amount: number,
+  currency: string
+): Promise<void> => {
+  const appName = getAppName();
+
+  try {
+    await sendMail({
+      to: email,
+      subject: `Deposit Rejected - ${currency} ${money(amount)} - ${appName}`,
+      html: renderEmail(
+        appName,
+        'Deposit rejected',
+        `Hello ${username || 'User'}, your deposit has been rejected.`,
+        [
+          row('Amount', `${currency} ${money(amount)}`),
+          row('Status', 'Rejected'),
+        ].join(''),
+        ['If you have questions, please contact support.', 'This is an automated notification.']
+      ),
+    });
+    console.log(`Deposit rejected email sent to ${email}`);
+  } catch (error) {
+    console.error('Failed to send deposit rejected email:', error);
+  }
+};

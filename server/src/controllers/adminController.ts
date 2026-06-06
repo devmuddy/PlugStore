@@ -8,6 +8,7 @@ import Category from '../models/Category';
 import Deposit from '../models/Deposit';
 import PaymentMethod from '../models/PaymentMethod';
 import { notifyUser } from '../utils/telegramNotify';
+import { sendDepositApprovedEmail, sendDepositRejectedEmail } from '../utils/emailHelpers';
 import { deleteImage } from '../config/cloudinary';
 
 // Update user balance (admin only)
@@ -563,6 +564,15 @@ export const approveDeposit = async (req: Request, res: Response): Promise<void>
       );
     }
 
+    // Email notification (non-blocking)
+    sendDepositApprovedEmail(
+      depositUser.email,
+      depositUser.username,
+      deposit.amount,
+      deposit.paymentMethod,
+      wallet.balance
+    );
+
     res.json({
       success: true,
       message: 'Deposit approved and balance credited successfully',
@@ -621,13 +631,23 @@ export const rejectDeposit = async (req: Request, res: Response): Promise<void> 
     await deposit.save();
 
     // Notify user via Telegram (non-blocking)
-    const rejectedUser = await User.findById(deposit.user).select('telegramId').lean();
+    const rejectedUser = await User.findById(deposit.user).select('telegramId email username').lean();
     if (rejectedUser?.telegramId) {
       notifyUser(
         rejectedUser.telegramId,
         `❌ <b>Deposit Rejected</b>\n` +
         `💵 Amount: ${deposit.paymentMethod} ${deposit.amount}\n` +
         `If you have questions, please contact support.`
+      );
+    }
+
+    // Email notification (non-blocking)
+    if (rejectedUser?.email) {
+      sendDepositRejectedEmail(
+        rejectedUser.email,
+        rejectedUser.username,
+        deposit.amount,
+        deposit.paymentMethod
       );
     }
 

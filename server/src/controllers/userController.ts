@@ -9,6 +9,8 @@ import Category from '../models/Category';
 import User from '../models/User';
 import PaymentMethod from '../models/PaymentMethod';
 import { notifyAdmin, notifyUser } from '../utils/telegramNotify';
+import { sendDepositSubmissionEmail, sendOrderConfirmationEmail } from '../utils/emailHelpers';
+import Admin from '../models/Admin';
 
 // Get user balance
 export const getBalance = async (req: Request, res: Response): Promise<void> => {
@@ -544,6 +546,18 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
       );
     }
 
+    // Email notification (non-blocking)
+    if (user?.email) {
+      sendOrderConfirmationEmail(
+        user.email,
+        user.username,
+        `ORD-${order._id.toString().slice(-6).toUpperCase()}`,
+        product.name,
+        totalPrice,
+        order._id.toString()
+      );
+    }
+
     // Emit socket event for real-time update (if socket is available)
     const io = (req as any).app?.get('io');
     if (io) {
@@ -722,6 +736,28 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
           `Deposit ID: ${deposit._id.toString()}`
       );
     }
+
+    // Email notifications (non-blocking)
+    sendDepositSubmissionEmail(
+      user.email,
+      user.username,
+      depositAmount,
+      paymentMethod.symbol,
+      transactionId.trim(),
+      deposit._id.toString()
+    );
+    Admin.findOne().select('email').lean().then((admin) => {
+      if (admin?.email) {
+        sendDepositSubmissionEmail(
+          admin.email,
+          'Admin',
+          depositAmount,
+          paymentMethod.symbol,
+          transactionId.trim(),
+          deposit._id.toString()
+        );
+      }
+    });
 
     res.json({
       success: true,
