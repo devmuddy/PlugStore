@@ -509,7 +509,7 @@ const Products = () => {
                         setShowSubCategoryForm(true);
                         setEditingSubCategory(null);
                       }}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      className="p-1.5 text-primary-600 hover:bg-primary-50 rounded transition-colors"
                       title="Add Sub-category"
                     >
                       <HiPlus className="w-4 h-4" />

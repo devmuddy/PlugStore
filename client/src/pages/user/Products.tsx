@@ -200,12 +200,12 @@ const Products = () => {
                     style={{
                       background:
                         isPurchasing || isAnyPurchasing
-                          ? '#93c5fd'
-                          : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                          ? '#fca5a5'
+                          : 'linear-gradient(135deg, #dc2626, #b91c1c)',
                       boxShadow:
                         isPurchasing || isAnyPurchasing
                           ? 'none'
-                          : '0 12px 26px rgba(37,99,235,0.18)',
+                          : '0 12px 26px rgba(220,38,38,0.18)',
                     }}
                   >
                     {isPurchasing ? (

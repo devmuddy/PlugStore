@@ -43,7 +43,7 @@ const Transactions = () => {
     if (type === 'order') {
       switch (status) {
         case 'delivered':  return <HiCheckCircle className="w-4 h-4 text-green-600" />;
-        case 'processing': return <HiClock className="w-4 h-4 text-blue-600" />;
+        case 'processing': return <HiClock className="w-4 h-4 text-primary-600" />;
         case 'pending':    return <HiClock className="w-4 h-4 text-amber-600" />;
         case 'cancelled':  return <HiXCircle className="w-4 h-4 text-red-600" />;
         default:           return <HiClock className="w-4 h-4 text-gray-500" />;
@@ -63,7 +63,7 @@ const Transactions = () => {
     if (type === 'order') {
       switch (status) {
         case 'delivered':  return 'bg-green-50 text-green-600';
-        case 'processing': return 'bg-blue-50 text-blue-600';
+        case 'processing': return 'bg-primary-50 text-primary-600';
         case 'pending':    return 'bg-amber-50 text-amber-600';
         case 'cancelled':  return 'bg-red-50 text-red-500';
         default:           return 'bg-gray-50 text-gray-500';
@@ -83,7 +83,7 @@ const Transactions = () => {
     if (type === 'order') {
       switch (status) {
         case 'delivered':  return 'text-green-700 bg-green-50';
-        case 'processing': return 'text-blue-700 bg-blue-50';
+        case 'processing': return 'text-primary-700 bg-primary-50';
         case 'pending':    return 'text-amber-700 bg-amber-50';
         case 'cancelled':  return 'text-red-700 bg-red-50';
         default:           return 'text-gray-600 bg-gray-50';

@@ -2,18 +2,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
 @theme {
-  /* Blue Primary Color Palette */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-  --color-primary-950: #172554;
+  /* Red Primary Color Palette */
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #f87171;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
+  --color-primary-800: #991b1b;
+  --color-primary-900: #7f1d1d;
+  --color-primary-950: #450a0a;
 }
 
 /* Base styles */
@@ -108,7 +108,7 @@ body {
 .auth-feature-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: #60a5fa;
+  background: #f87171;
   flex-shrink: 0;
 }
 
@@ -126,12 +126,12 @@ body {
   font-family: 'DM Sans', sans-serif;
 }
 .auth-input::placeholder { color: #94a3b8; }
-.auth-input:focus { border-color: #2563eb; }
+.auth-input:focus { border-color: #dc2626; }
 
 .auth-input-bar {
   display: block;
   height: 2px;
-  background: #2563eb;
+  background: #dc2626;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
@@ -141,7 +141,7 @@ body {
 .auth-input:focus ~ .auth-input-bar { transform: scaleX(1); }
 
 .auth-btn {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -153,7 +153,7 @@ body {
   letter-spacing: 0.03em;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-  box-shadow: 0 4px 20px rgba(37,99,235,0.32);
+  box-shadow: 0 4px 20px rgba(220,38,38,0.32);
   position: relative;
   overflow: hidden;
 }
@@ -167,7 +167,7 @@ body {
 }
 .auth-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(37,99,235,0.42);
+  box-shadow: 0 8px 28px rgba(220,38,38,0.42);
 }
 .auth-btn:hover::before { opacity: 1; }
 .auth-btn:active:not(:disabled) { transform: translateY(0); }

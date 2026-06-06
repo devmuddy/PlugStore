@@ -62,8 +62,8 @@ const AdminDashboard = () => {
       title: 'Total Users',
       value: stats.totalUsers.toLocaleString(),
       icon: HiUsers,
-      iconColor: 'text-blue-600',
-      iconBg: 'bg-blue-50',
+      iconColor: 'text-primary-600',
+      iconBg: 'bg-primary-50',
       change: '+12%',
       changeType: 'positive',
     },
@@ -122,10 +122,10 @@ const AdminDashboard = () => {
       description: 'View customers',
       to: '/admin/users',
       icon: HiUsers,
-      iconBg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      glowBg: 'bg-blue-50',
-      barBg: 'bg-blue-500',
+      iconBg: 'bg-primary-50',
+      iconColor: 'text-primary-600',
+      glowBg: 'bg-primary-50',
+      barBg: 'bg-primary-500',
     },
     {
       title: 'Wallet',
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
       case 'pending':
         return 'text-amber-700';
       case 'processing':
-        return 'text-blue-700';
+        return 'text-primary-700';
       case 'cancelled':
         return 'text-rose-700';
       default:
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
       case 'pending':
         return 'bg-amber-500';
       case 'processing':
-        return 'bg-blue-500';
+        return 'bg-primary-500';
       case 'cancelled':
         return 'bg-rose-500';
       default:

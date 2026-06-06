@@ -79,7 +79,7 @@ const AdminOrders = () => {
       case 'completed':
         return 'text-green-700';
       case 'processing':
-        return 'text-blue-700';
+        return 'text-primary-700';
       case 'pending':
         return 'text-yellow-700';
       case 'cancelled':

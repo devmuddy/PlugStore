@@ -307,8 +307,8 @@ const Deposits = () => {
                   />
                 </div>
                 {/* Info Message */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4 max-w-md mx-auto">
-                  <p className="text-xs text-blue-800">
+                <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 mt-4 max-w-md mx-auto">
+                  <p className="text-xs text-primary-800">
                     <span className="font-medium">Quick steps:</span> Copy wallet address → Send amount → Enter transaction hash → Submit
                   </p>
                 </div>

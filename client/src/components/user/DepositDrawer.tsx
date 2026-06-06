@@ -287,7 +287,7 @@ const DepositDrawer = ({ open, onClose }: Props) => {
                   </p>
                   <div
                     className="flex items-end gap-1.5 pb-2"
-                    style={{ borderBottom: `1.5px solid ${amountFocused ? '#2563eb' : '#cbd5e1'}`, transition: 'border-color 0.25s' }}
+                    style={{ borderBottom: `1.5px solid ${amountFocused ? '#dc2626' : '#cbd5e1'}`, transition: 'border-color 0.25s' }}
                   >
                     <span className="text-base font-bold text-gray-400 leading-none mb-0.5">$</span>
                     <input

@@ -93,7 +93,7 @@ const Dashboard = () => {
         case 'delivered':
           return <HiCheckCircle className="w-5 h-5 text-green-600" />;
         case 'processing':
-          return <HiClock className="w-5 h-5 text-blue-600" />;
+          return <HiClock className="w-5 h-5 text-primary-600" />;
         case 'pending':
           return <HiClock className="w-5 h-5 text-amber-600" />;
         case 'cancelled':
@@ -125,7 +125,7 @@ const Dashboard = () => {
         case 'delivered':
           return 'text-green-700 bg-green-50';
         case 'processing':
-          return 'text-blue-700 bg-blue-50';
+          return 'text-primary-700 bg-primary-50';
         case 'pending':
           return 'text-amber-700 bg-amber-50';
         case 'cancelled':
@@ -157,8 +157,8 @@ const Dashboard = () => {
       {/* ── Balance Card ───────────────────────────────── */}
       <div className="w-full mb-5">
         <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
-          {/* Blue accent top bar */}
-          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #2563eb, #60a5fa)' }} />
+          {/* Accent top bar */}
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #dc2626, #f87171)' }} />
 
           <div className="p-5">
             {/* Top row */}
@@ -193,7 +193,7 @@ const Dashboard = () => {
               <button
                 onClick={handleDeposit}
                 className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', boxShadow: '0 2px 12px rgba(37,99,235,0.3)' }}
+                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 2px 12px rgba(220,38,38,0.3)' }}
               >
                 <HiPlus className="w-4 h-4" />
                 Add Funds

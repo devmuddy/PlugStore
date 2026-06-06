@@ -232,8 +232,8 @@ const UserLayout = () => {
 
       <div className="lg:pl-80">
         <nav className="bg-white sticky top-0 z-20" style={{ borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 12px rgba(0,0,0,0.05)' }}>
-          {/* Blue accent top line */}
-          <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #2563eb, #60a5fa, #2563eb)' }} />
+          {/* Accent top line */}
+          <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #dc2626, #f87171, #dc2626)' }} />
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-14">
               <div>
