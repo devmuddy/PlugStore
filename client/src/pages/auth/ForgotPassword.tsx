@@ -25,114 +25,58 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen flex bg-red-50/40 auth-root">
+      <div className="w-full max-w-lg mx-auto px-4 py-10">
 
-      {/* ── LEFT PANEL ─────────────────────────────────── */}
-      <div
-        className="hidden lg:flex lg:w-[48%] relative overflow-hidden flex-col justify-between p-12"
-        style={{ background: 'linear-gradient(160deg, #0f172a 0%, #7f1d1d 60%, #b91c1c 100%)' }}
-      >
-        <div className="absolute inset-0 auth-dot-grid pointer-events-none" />
-        <div className="auth-orb-1 absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(248,113,113,0.25) 0%, transparent 70%)' }} />
-        <div className="auth-orb-2 absolute bottom-32 -left-20 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(239,68,68,0.2) 0%, transparent 70%)' }} />
-        <div className="auth-orb-3 absolute top-1/2 right-10 w-48 h-48 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(252,165,165,0.15) 0%, transparent 70%)' }} />
-
-        <div className="relative z-10">
-          <h1 className="auth-heading text-white font-extrabold leading-tight mb-5 mt-4"
-            style={{ fontSize: 'clamp(1.8rem, 3vw, 2.5rem)' }}>
-            Locked out?<br />
-            <span style={{ color: '#fca5a5' }}>We've got</span><br />
-            you covered.
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: '1.7', maxWidth: '300px' }}>
-            Enter your email and we'll send you a link to reset your password — no fuss, no wait.
-          </p>
-        </div>
-
-        <div className="relative z-10 space-y-3">
-          <div className="auth-feature-pill"><span className="auth-feature-dot" />Secure reset link via email</div>
-          <div className="auth-feature-pill"><span className="auth-feature-dot" />Link expires in 1 hour</div>
-          <div className="auth-feature-pill"><span className="auth-feature-dot" />No password stored in plain text</div>
-        </div>
-      </div>
-
-      {/* ── RIGHT PANEL ────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-8 py-10 bg-white">
-        <div className="w-full" style={{ maxWidth: '340px' }}>
-
-          {sent ? (
-            /* ── Success state ── */
-            <div className="auth-reveal auth-reveal-1 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-5">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="#dc2626" strokeWidth="1.8"/>
-                  <path d="M2 6l10 7 10-7" stroke="#dc2626" strokeWidth="1.8" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <h2 className="auth-heading font-bold text-gray-900 mb-2" style={{ fontSize: '1.4rem' }}>
-                Check your inbox
-              </h2>
-              <p className="text-sm text-gray-400 font-light mb-8">
-                We sent reset instructions to <span className="text-gray-600 font-medium">{email}</span>.
-              </p>
-              <Link to="/login" className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
-                ← Back to sign in
-              </Link>
+        {sent ? (
+          /* ── Success state ── */
+          <div>
+            <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
             </div>
-          ) : (
-            <>
-              {/* Heading */}
-              <div className="mb-8 auth-reveal auth-reveal-1">
-                <h2 className="auth-heading font-bold text-gray-900 leading-tight" style={{ fontSize: '1.5rem' }}>
-                  Reset password
-                </h2>
-                <p className="text-sm text-gray-400 mt-1 font-light">
-                  <span className="font-semibold text-primary-600">{env.appName}</span> — we'll email you a secure reset link.
-                </p>
+            <h3 className="text-sm font-bold text-gray-900 mb-1">Check your inbox</h3>
+            <p className="text-xs text-gray-400 mb-5">
+              We sent reset instructions to <span className="text-gray-600 font-medium">{email}</span>.
+            </p>
+            <Link to="/login" className="text-xs font-semibold text-primary-600 hover:text-primary-700">Back to sign in</Link>
+          </div>
+        ) : (
+          <>
+            {/* Brand */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-primary-600">{env.appName}</h2>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1.5">Email</label>
+                <input
+                  type="email" required
+                  className="w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none placeholder:text-gray-400"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 text-base font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Sending…' : 'Send reset link'}
+              </button>
+            </form>
 
-              <form onSubmit={handleSubmit} className="space-y-7">
+            {/* Footer */}
+            <p className="text-sm text-gray-400 text-center mt-6">
+              <Link to="/login" className="font-semibold text-primary-600 hover:text-primary-700">Back to sign in</Link>
+            </p>
+          </>
+        )}
 
-                {/* Email */}
-                <div className="auth-reveal auth-reveal-2">
-                  <label className="block text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="email" name="email" type="email" required
-                      className="auth-input"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <span className="auth-input-bar" />
-                  </div>
-                </div>
-
-                {/* Submit */}
-                <div className="auth-reveal auth-reveal-3 pt-1">
-                  <button type="submit" disabled={loading} className="auth-btn">
-                    {loading ? 'Sending…' : 'Send Reset Link →'}
-                  </button>
-                </div>
-
-                {/* Back link */}
-                <div className="auth-reveal auth-reveal-4 text-center">
-                  <Link to="/login" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
-                    ← Back to sign in
-                  </Link>
-                </div>
-
-              </form>
-            </>
-          )}
-
-        </div>
       </div>
-
     </div>
   );
 };

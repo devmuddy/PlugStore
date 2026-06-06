@@ -553,9 +553,8 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
             `${resetUrl}\n\n` +
             `This link expires in 1 hour.`
         );
-      } else {
-        await sendPasswordResetEmail(user.email, resetToken);
       }
+      await sendPasswordResetEmail(user.email, resetToken);
     } catch (emailError) {
       console.error('Failed to send password reset notification:', emailError);
       res.status(500).json({
