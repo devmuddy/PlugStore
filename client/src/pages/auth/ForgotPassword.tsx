@@ -24,7 +24,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex auth-root">
+    <div className="min-h-screen flex bg-red-50/40 auth-root">
 
       {/* ── LEFT PANEL ─────────────────────────────────── */}
       <div

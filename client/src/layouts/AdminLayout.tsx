@@ -60,7 +60,7 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-red-50/40">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -177,7 +177,7 @@ const AdminLayout = () => {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top navbar */}
-        <nav className="bg-white sticky top-0 z-20 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.08)]">
+        <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">

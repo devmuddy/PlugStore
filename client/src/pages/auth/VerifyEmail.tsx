@@ -49,7 +49,7 @@ const VerifyEmail = () => {
   }, [miniAppLoginUrl, token, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50/60 via-red-50/20 to-red-50/60 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="p-4 sm:p-8">
