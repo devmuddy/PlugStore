@@ -46,8 +46,38 @@ export const uploadToCloudinary = async (req: Request, _res: Response, next: Nex
         const uploadPromises = req.files.map(async (file: Express.Multer.File) => {
           try {
             const result = await uploadImage(file, 'logszone');
-
-            uploadImage(file, 'logszone/payment-methods')
+            (file as any).url = result.url;
+            (file as any).publicId = result.publicId;
+          } catch (uploadError: any) {
+            console.error('Failed to upload file to Cloudinary:', uploadError);
+            (file as any).uploadFailed = true;
+            // Extract error message properly
+            const errorMessage = uploadError?.error?.message || uploadError?.message || uploadError?.toString() || 'Unknown error';
+            (file as any).uploadError = errorMessage;
+          }
+          delete (file as any).buffer;
+          return file;
+        });
+        await Promise.all(uploadPromises);
+      } else {
+        // Handle named fields (e.g., { icon: [...], qrCode: [...] })
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        
+        // If no files in named fields, skip
+        if (!files || Object.keys(files).length === 0) {
+          return next();
+        }
+        
+        const uploadPromises: Promise<any>[] = [];
+        
+        for (const fieldName in files) {
+          const fieldFiles = files[fieldName];
+          // Skip empty arrays
+          if (!fieldFiles || fieldFiles.length === 0) continue;
+          
+          for (const file of fieldFiles) {
+            uploadPromises.push(
+              uploadImage(file, 'logszone/payment-methods')
                 .then((result) => {
                   (file as any).url = result.url;
                   (file as any).publicId = result.publicId;
