@@ -64,7 +64,7 @@ const questionPassword = (query: string): Promise<string> => {
 const createAdmin = async () => {
   try {
     // Connect to MongoDB
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/darknet';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/logszone';
     await mongoose.connect(mongoURI);
     console.log('✅ Connected to MongoDB\n');
 

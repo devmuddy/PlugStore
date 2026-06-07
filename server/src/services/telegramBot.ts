@@ -62,8 +62,8 @@ export class TelegramBotService {
       : user?.first_name || 'there';
 
     const text = [
-      `Hello ${displayName}, welcome to Dark Net.`,
-      'Dark Net lets you browse digital products, place orders, and manage your wallet in one place.',
+      `Hello ${displayName}, welcome to Logs Zone.`,
+      'Logs Zone lets you browse digital products, place orders, and manage your wallet in one place.',
       'Tap Get Started below to open the app.',
     ].join('\n');
 

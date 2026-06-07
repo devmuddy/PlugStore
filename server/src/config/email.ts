@@ -110,7 +110,7 @@ export const sendMail = async (options: {
 }): Promise<void> => {
   const from = (() => {
     const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@example.com';
-    const emailFromName = process.env.EMAIL_FROM_NAME || process.env.APP_NAME || 'Dark Net';
+    const emailFromName = process.env.EMAIL_FROM_NAME || process.env.APP_NAME || 'Logs Zone';
     return `${emailFromName} <${emailFrom}>`;
   })();
 

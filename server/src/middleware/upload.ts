@@ -27,7 +27,7 @@ export const uploadToCloudinary = async (req: Request, _res: Response, next: Nex
     if (req.file) {
       // Upload single file to Cloudinary
       try {
-        const result = await uploadImage(req.file, 'darknet');
+        const result = await uploadImage(req.file, 'logszone');
         req.file.url = result.url;
         req.file.publicId = result.publicId;
       } catch (uploadError: any) {
@@ -45,9 +45,9 @@ export const uploadToCloudinary = async (req: Request, _res: Response, next: Nex
         // Upload multiple files to Cloudinary
         const uploadPromises = req.files.map(async (file: Express.Multer.File) => {
           try {
-            const result = await uploadImage(file, 'darknet');
+            const result = await uploadImage(file, 'logszone');
 
-            uploadImage(file, 'darknet/payment-methods')
+            uploadImage(file, 'logszone/payment-methods')
                 .then((result) => {
                   (file as any).url = result.url;
                   (file as any).publicId = result.publicId;

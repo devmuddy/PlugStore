@@ -6,11 +6,11 @@ export const generateToken = (): string => {
 };
 
 export const getAppName = (): string => {
-  return process.env.APP_NAME || process.env.SITE_NAME || process.env.EMAIL_FROM_NAME || 'Dark Net';
+  return process.env.APP_NAME || process.env.SITE_NAME || process.env.EMAIL_FROM_NAME || 'Logs Zone';
 };
 
 export const getEmailFrom = (): string => {
-  const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@darknet.com';
+  const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@logszone.com';
   const emailFromName = getAppName();
   return `${emailFromName} <${emailFrom}>`;
 };

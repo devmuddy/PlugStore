@@ -587,9 +587,9 @@ const Home = () => {
               <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="mailto:support@darknet.com" className="hover:text-primary-400 transition-colors text-sm flex items-center space-x-2">
+                  <a href="mailto:support@logszone.com" className="hover:text-primary-400 transition-colors text-sm flex items-center space-x-2">
 
-                    <span>support@darknet.com</span>
+                    <span>support@logszone.com</span>
                   </a>
                 </li>
                 <li>
