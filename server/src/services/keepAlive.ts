@@ -55,7 +55,7 @@ export const startKeepAlivePinger = (): void => {
         method: 'GET',
         signal: timeoutController.signal,
         headers: {
-          'User-Agent': 'plugstore-render-keepalive',
+          'User-Agent': 'darknet-render-keepalive',
         },
       });
 

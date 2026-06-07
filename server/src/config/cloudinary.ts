@@ -102,7 +102,7 @@ export const deleteImage = async (publicId: string): Promise<void> => {
 // Helper function to upload image directly (without multer)
 export const uploadImage = async (
   file: Express.Multer.File | string,
-  folder: string = 'plugstore'
+  folder: string = 'darknet'
 ): Promise<{ url: string; publicId: string }> => {
   // Check if Cloudinary is configured
   if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {

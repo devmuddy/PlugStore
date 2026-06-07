@@ -145,7 +145,7 @@ const migrateData = async () => {
     }
 
     // Get source MongoDB URI from environment
-    const sourceMongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/plugstore';
+    const sourceMongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/darknet';
 
     console.log('\n🚀 Starting Data Migration');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
