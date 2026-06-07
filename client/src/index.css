@@ -173,11 +173,4 @@ body {
 .auth-btn:active:not(:disabled) { transform: translateY(0); }
 .auth-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* Hide Jivo behind drawers when a drawer is open */
-body.deposit-drawer-open iframe[id*="jivo"],
-body.deposit-drawer-open div[id*="jivo"],
-body.deposit-drawer-open iframe[src*="jivosite.com"],
-body.deposit-drawer-open #jvlabelWrap,
-body.deposit-drawer-open jdiv {
-  display: none !important;
-}
+/* SmartsUp visibility is controlled via API */

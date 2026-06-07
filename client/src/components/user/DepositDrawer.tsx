@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import {
-  HiArrowLeft,
-  HiX,
-  HiOutlineDocumentDuplicate,
-  HiCheckCircle,
-} from 'react-icons/hi';
+import { HiArrowLeft, HiX, HiOutlineDocumentDuplicate, HiCheckCircle } from 'react-icons/hi';
 import { userService, type PaymentMethod } from '../../services/api/userService';
+import { hideSupportWidget, showSupportWidget } from '../../utils/supportWidget';
 
 interface Props {
   open: boolean;
@@ -23,14 +19,13 @@ const DepositDrawer = ({ open, onClose }: Props) => {
   const [depositForm, setDepositForm] = useState({ amount: '', transactionHash: '' });
   const [amountFocused, setAmountFocused] = useState(false);
 
-  // Hide Jivo chat behind the drawer
+  // Hide SmartsUp chat behind the drawer
   useEffect(() => {
     if (open) {
-      document.body.classList.add('deposit-drawer-open');
+      hideSupportWidget();
     } else {
-      document.body.classList.remove('deposit-drawer-open');
+      showSupportWidget();
     }
-    return () => document.body.classList.remove('deposit-drawer-open');
   }, [open]);
 
   useEffect(() => {
