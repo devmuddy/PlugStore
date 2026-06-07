@@ -1,30 +1,37 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { initializeSocket } from '../../services/socket/socket';
-import { userService, type Transaction } from '../../services/api/userService';
+import { userService, type Transaction, type Product } from '../../services/api/userService';
+import { categoryService, type Category } from '../../services/api/categoryService';
 import { HiPlus, HiCheckCircle, HiClock, HiXCircle, HiOutlineShoppingCart, HiRefresh } from 'react-icons/hi';
 
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [balance, setBalance] = useState<number>(0.00);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
 
   useEffect(() => {
-    // Fetch user balance and transactions from API
+    // Fetch user dashboard data
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [balanceData, transactionsData] = await Promise.all([
+        const [balanceData, transactionsData, productsData, categoriesData] = await Promise.all([
           userService.getBalance(),
           userService.getTransactions(5),
+          userService.getProducts(),
+          categoryService.getCategories(),
         ]);
         setBalance(balanceData);
         setTransactions(transactionsData);
+        setProducts(productsData.products.slice(0, 3));
+        setCategories(categoriesData.slice(0, 3));
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
-        // Keep default values on error
       } finally {
         setIsLoading(false);
       }
@@ -156,159 +163,210 @@ const Dashboard = () => {
     <div>
       {/* ── Balance Card ───────────────────────────────── */}
       <div className="w-full mb-5">
-        <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
-          {/* Accent top bar */}
-          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #dc2626, #f87171)' }} />
+        <div className="relative rounded-xl overflow-hidden bg-primary-600 shadow-md shadow-primary-200/40">
+          {/* Decorative circles */}
+          <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
+          <div className="absolute -bottom-5 -left-5 w-24 h-24 rounded-full bg-white/[0.03]" />
 
-          <div className="p-5">
+          <div className="relative p-4 sm:p-5">
             {/* Top row */}
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">
                 Available Balance
               </p>
               <button
                 type="button"
                 onClick={handleRefreshBalance}
                 disabled={isRefreshingBalance}
-                className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 disabled:opacity-40 transition-colors"
+                className="w-6 h-6 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 transition-colors"
                 aria-label="Refresh balance"
               >
-                <HiRefresh className={`w-3.5 h-3.5 text-gray-400 ${isRefreshingBalance ? 'animate-spin' : ''}`} />
+                <HiRefresh className={`w-3 h-3 text-white/60 ${isRefreshingBalance ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
-            {/* Amount + Deposit on same row */}
+            {/* Amount row */}
             <div className="flex items-center justify-between gap-3">
               <div>
                 {isLoading ? (
-                  <div className="h-9 w-32 rounded-lg bg-gray-100 animate-pulse" />
+                  <div className="h-8 w-28 rounded-lg bg-white/10 animate-pulse" />
                 ) : (
-                  <p className="auth-heading text-gray-900 font-bold leading-none" style={{ fontSize: '2.1rem' }}>
+                  <p className="text-white font-bold leading-none tracking-tight text-2xl sm:text-3xl">
                     ${formatBalance(balance)}
                   </p>
                 )}
-                <p className="text-[11px] text-gray-400 mt-1.5">Wallet funds</p>
+                <p className="text-[11px] text-white/40 font-medium mt-0.5">Wallet funds</p>
               </div>
 
               <button
                 onClick={handleDeposit}
-                className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 2px 12px rgba(220,38,38,0.3)' }}
+                className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-primary-700 bg-white hover:bg-white/90 transition-all shadow"
               >
-                <HiPlus className="w-4 h-4" />
+                <HiPlus className="w-3.5 h-3.5" />
                 Add Funds
               </button>
             </div>
           </div>
+
+          {/* Browse Products strip */}
+          <button
+            onClick={handleOpenProductsDrawer}
+            className="relative w-full flex items-center justify-between px-4 sm:px-5 py-3 bg-white/10 border-t border-white/15 hover:bg-white/15 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="text-white text-xs font-bold">→</span>
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-bold text-white">Browse Products</p>
+                <p className="text-[10px] text-white/50">Explore all categories &amp; items</p>
+              </div>
+            </div>
+            <span className="text-white/40 group-hover:text-white/70 transition-colors text-xs">Shop now →</span>
+          </button>
         </div>
       </div>
 
-      {/* ── Browse Banner ───────────────────────────────── */}
-      <button
-        onClick={handleOpenProductsDrawer}
-        className="w-full mb-5 flex items-center justify-between px-5 py-4 rounded-2xl text-left group bg-primary-600"
-      >
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-            style={{ color: 'rgba(255,255,255,0.55)' }}>
-            Store
-          </p>
-          <p className="auth-heading text-white font-bold text-base leading-tight">
-            Browse Products
-          </p>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Explore all categories &amp; items
-          </p>
-        </div>
-        <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
-          style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
-        >
-          <span className="text-white font-bold text-sm">→</span>
-        </div>
-      </button>
-
-      {/* ── Recent Transactions ────────────────────────── */}
-      <div className="w-full">
-        <div className="bg-transparent overflow-hidden">
-          <div className="py-3 border-b border-gray-100 flex items-center justify-between mb-1">
+      {/* ── Popular Products ───────────────────────────── */}
+      {products.length > 0 && (
+        <div className="w-full mb-5">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="auth-heading text-sm font-bold text-gray-900">Recent Transactions</h2>
-              <p className="text-[11px] text-gray-400 mt-0.5">Deposits, orders & credits</p>
+              <h2 className="text-sm font-bold text-gray-900">Popular Products</h2>
+              <p className="text-[11px] text-gray-400 mt-0.5">Trending items this week</p>
             </div>
-            <Link
-              to="/user/transactions"
+            <button
+              onClick={() => navigate('/user/products')}
               className="text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors"
             >
               View all →
-            </Link>
+            </button>
           </div>
+          <div className="flex gap-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pb-1" style={{ scrollbarWidth: 'none' }}>
+            {products.map((product) => (
+              <button
+                key={product.id}
+                onClick={() => navigate(`/user/products?category=${product.categoryId || ''}`)}
+                className="px-4 py-2 rounded-lg bg-red-50/80 border border-red-100 text-sm font-medium text-gray-800 whitespace-nowrap hover:bg-red-100 hover:text-primary-700 transition-all shrink-0"
+              >
+                {product.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-          <div className="pt-1">
-            {isLoading ? (
-              [1,2,3].map(i => (
-                <div key={i} className="flex items-center gap-3 py-3 border-b border-gray-100 animate-pulse">
-                  <div className="w-8 h-8 rounded-xl bg-gray-100 shrink-0" />
+      {/* ── Categories ──────────────────────────────────── */}
+      {categories.length > 0 && (
+        <div className="w-full mb-5">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-sm font-bold text-gray-900">Categories</h2>
+              <p className="text-[11px] text-gray-400 mt-0.5">Browse by category</p>
+            </div>
+            <button
+              onClick={() => navigate('/user/products')}
+              className="text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+            >
+              View all →
+            </button>
+          </div>
+          <div className="flex gap-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pb-1" style={{ scrollbarWidth: 'none' }}>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => navigate(`/user/products?category=${category.id}`)}
+                className="px-4 py-2 rounded-lg bg-red-50/80 border border-red-100 text-sm font-medium text-gray-800 whitespace-nowrap hover:bg-red-100 hover:text-primary-700 transition-all shrink-0"
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Recent Transactions ────────────────────────── */}
+      <div className="w-full">
+        <div className="border-b border-gray-100 flex items-center justify-between pb-3 mb-4">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">Recent Transactions</h2>
+            <p className="text-[11px] text-gray-400 mt-0.5">Deposits, orders & credits</p>
+          </div>
+          <Link
+            to="/user/transactions"
+            className="text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+          >
+            View all →
+          </Link>
+        </div>
+
+        <div className="divide-y divide-gray-100">
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1,2,3].map(i => (
+                <div key={i} className="flex items-center gap-3 animate-pulse">
+                  <div className="w-9 h-9 rounded-xl bg-gray-100 shrink-0" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="h-3 w-24 bg-gray-100 rounded" />
-                    <div className="h-2.5 w-16 bg-gray-50 rounded" />
+                    <div className="h-3.5 w-28 bg-gray-100 rounded" />
+                    <div className="h-3 w-20 bg-gray-50 rounded" />
                   </div>
-                  <div className="h-4 w-14 bg-gray-100 rounded" />
+                  <div className="h-4 w-16 bg-gray-100 rounded" />
                 </div>
-              ))
-            ) : transactions.length === 0 ? (
-              <div className="py-10 text-center">
-                <p className="text-sm text-gray-500">No transactions yet</p>
-                <p className="text-xs text-gray-400 mt-1">Your history will appear here</p>
+              ))}
+            </div>
+          ) : transactions.length === 0 ? (
+            <div className="py-12 text-center">
+              <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-            ) : (
-              transactions.map((transaction, index) => {
-                const isCredit = transaction.type === 'credit' || transaction.type === 'deposit';
-                const isDebit  = transaction.type === 'debit' || transaction.type === 'order';
-                const label =
-                  transaction.type === 'order'   ? 'Order' :
-                  transaction.type === 'credit'  ? 'Credit' :
-                  transaction.type === 'debit'   ? 'Debit' : 'Deposit';
+              <p className="text-sm font-medium text-gray-500">No transactions yet</p>
+              <p className="text-xs text-gray-400 mt-1">Your history will appear here</p>
+            </div>
+          ) : (
+            transactions.map((transaction) => {
+              const isCredit = transaction.type === 'credit' || transaction.type === 'deposit';
+              const isDebit  = transaction.type === 'debit' || transaction.type === 'order';
+              const label =
+                transaction.type === 'order'   ? 'Order' :
+                transaction.type === 'credit'  ? 'Credit' :
+                transaction.type === 'debit'   ? 'Debit' : 'Deposit';
 
-                return (
-                  <div
-                    key={transaction.id}
-                    className={`flex items-center gap-3 py-2.5 ${index !== transactions.length - 1 ? 'border-b border-gray-100' : ''}`}
-                  >
-                    {/* Icon */}
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${getStatusColor(transaction.status, transaction.type)}`}>
-                      {transaction.type === 'order'
-                        ? <HiOutlineShoppingCart className="w-3.5 h-3.5" />
-                        : getStatusIcon(transaction.status, transaction.type)}
-                    </div>
+              return (
+                <div key={transaction.id} className="py-3 flex items-center gap-3 hover:bg-red-50/30 transition-colors">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${getStatusColor(transaction.status, transaction.type)}`}>
+                    {transaction.type === 'order'
+                      ? <HiOutlineShoppingCart className="w-4 h-4" />
+                      : getStatusIcon(transaction.status, transaction.type)}
+                  </div>
 
-                    {/* Label + description */}
-                    <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-gray-900 truncate">{label}</p>
-                      {(transaction.productName || transaction.description) && (
-                        <p className="text-xs text-gray-400 truncate">
-                          {transaction.productName || transaction.description}
-                        </p>
-                      )}
-                      <p className="text-[11px] text-gray-400">{formatDate(transaction.createdAt)}</p>
-                    </div>
-
-                    {/* Amount + status */}
-                    <div className="shrink-0 text-right">
-                      <p className={`text-base font-bold leading-none ${
-                        isCredit ? 'text-green-600' : isDebit ? 'text-red-500' : 'text-gray-900'
-                      }`}>
-                        {isDebit ? '-' : '+'}${transaction.amount.toFixed(2)}
-                      </p>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-1.5 ${getStatusColor(transaction.status, transaction.type)}`}>
+                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-md ${getStatusColor(transaction.status, transaction.type)}`}>
                         {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
                       </span>
                     </div>
+                    {(transaction.productName || transaction.description) && (
+                      <p className="text-xs text-gray-400 truncate mt-0.5">
+                        {transaction.productName || transaction.description}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-gray-300 mt-0.5">{formatDate(transaction.createdAt)}</p>
                   </div>
-                );
-              })
-            )}
-          </div>
+
+                  <div className="shrink-0 text-right">
+                    <p className={`text-sm font-bold leading-none ${
+                      isCredit ? 'text-green-600' : isDebit ? 'text-red-500' : 'text-gray-900'
+                    }`}>
+                      {isDebit ? '-' : '+'}${transaction.amount.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

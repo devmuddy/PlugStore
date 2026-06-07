@@ -116,7 +116,7 @@ const UserLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-red-50/40">
       {productsDrawerOpen && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 lg:hidden"
@@ -231,32 +231,46 @@ const UserLayout = () => {
       </aside>
 
       <div className="lg:pl-80">
-        <nav className="bg-white sticky top-0 z-20" style={{ borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 12px rgba(0,0,0,0.05)' }}>
-          {/* Accent top line */}
-          <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, #dc2626, #f87171, #dc2626)' }} />
+        <nav className="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-gray-100">
           <div className="px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-14">
-              <div>
-                <p className="text-[11px] text-gray-400 font-light tracking-wide">Welcome back</p>
-                <h2 className="auth-heading text-sm font-bold text-gray-900 leading-tight">
-                  {user?.username || user?.email?.split('@')[0] || 'User'}
-                </h2>
+            <div className="flex items-center justify-between h-16">
+              {/* Left: greeting */}
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="text-[11px] text-gray-400 font-medium leading-tight">Welcome back</p>
+                  <p className="text-sm font-bold text-gray-900 leading-tight">
+                    {user?.username || user?.email?.split('@')[0] || 'User'}
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoggingOut ? (
-                  <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+
+              {/* Right: actions */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setDepositDrawerOpen(true)}
+                  className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                   </svg>
-                ) : (
-                  <HiLogout className="w-3.5 h-3.5" />
-                )}
-                <span>{isLoggingOut ? 'Logging out…' : 'Logout'}</span>
-              </button>
+                  Deposit
+                </button>
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50"
+                >
+                  {isLoggingOut ? (
+                    <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <HiLogout className="w-3.5 h-3.5" />
+                  )}
+                  <span className="hidden sm:inline">{isLoggingOut ? 'Logging out…' : 'Logout'}</span>
+                </button>
+              </div>
             </div>
           </div>
         </nav>
