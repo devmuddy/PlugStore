@@ -13,10 +13,17 @@ const getResendClient = (): Resend | null => {
   return resendClient;
 };
 
+const formatFromAddress = (fallbackEmail: string): string => {
+  const emailFrom = process.env.EMAIL_FROM || fallbackEmail;
+  const emailFromName = process.env.EMAIL_FROM_NAME || process.env.APP_NAME || 'Logs Zone';
+  return `${emailFromName} <${emailFrom}>`;
+};
+
 // Create nodemailer SMTP transporter
 const createTransporter = () => {
-  const emailHost = process.env.EMAIL_HOST;
-  const emailPort = process.env.EMAIL_PORT;
+  const isGmail = process.env.EMAIL_SERVICE === 'gmail';
+  const emailHost = process.env.EMAIL_HOST || (isGmail ? 'smtp.gmail.com' : undefined);
+  const emailPort = process.env.EMAIL_PORT || (isGmail ? '587' : undefined);
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
@@ -43,6 +50,9 @@ const createTransporter = () => {
     port,
     secure,
     requireTLS,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
     auth: {
       user: emailUser,
       pass: emailPass,
@@ -60,7 +70,7 @@ export const verifyEmailConnection = async (): Promise<boolean> => {
   const resend = getResendClient();
   if (resend) {
     console.log('✅ Email: Resend API configured');
-    console.log(`   From: ${process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply'}`);
+    console.log(`   From: ${formatFromAddress('onboarding@resend.dev')}`);
     return true;
   }
 
@@ -98,6 +108,9 @@ export const verifyEmailConnection = async (): Promise<boolean> => {
     } else {
       console.log(`   Error: ${error.message || 'Unknown error'}`);
     }
+    if (error.code) console.log(`   Code: ${error.code}`);
+    if (error.command) console.log(`   Command: ${error.command}`);
+    console.log(`   Host: ${process.env.EMAIL_HOST || 'not set'}:${process.env.EMAIL_PORT || 'not set'}`);
     return false;
   }
 };
@@ -109,9 +122,10 @@ export const sendMail = async (options: {
   html: string;
 }): Promise<void> => {
   const from = (() => {
-    const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@example.com';
-    const emailFromName = process.env.EMAIL_FROM_NAME || process.env.APP_NAME || 'Logs Zone';
-    return `${emailFromName} <${emailFrom}>`;
+    if (getResendClient()) {
+      return formatFromAddress('onboarding@resend.dev');
+    }
+    return formatFromAddress(process.env.EMAIL_USER || 'noreply@example.com');
   })();
 
   const resend = getResendClient();

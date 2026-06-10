@@ -123,6 +123,41 @@ export const sendOrderConfirmationEmail = async (
   }
 };
 
+export const sendAdminOrderNotificationEmail = async (
+  email: string,
+  username: string | undefined,
+  orderNumber: string,
+  customer: string,
+  productName: string,
+  amount: number,
+  orderId: string
+): Promise<void> => {
+  const appName = getAppName();
+
+  try {
+    await sendMail({
+      to: email,
+      subject: `New Product Purchase - ${orderNumber} - ${appName}`,
+      html: renderEmail(
+        appName,
+        'New product purchase',
+        `Hello ${username || 'Admin'}, a customer has completed a product purchase.`,
+        [
+          row('Order number', orderNumber),
+          row('Order ID', orderId),
+          row('Customer', customer),
+          row('Product', productName),
+          row('Total', `$${money(amount)}`),
+        ].join(''),
+        ['Review this order in the admin dashboard.', 'This is an automated notification.']
+      ),
+    });
+    console.log(`Admin order notification email sent to ${email} for order ${orderNumber}`);
+  } catch (error) {
+    console.error('Failed to send admin order notification email:', error);
+  }
+};
+
 export const sendDepositSubmissionEmail = async (
   email: string,
   username: string | undefined,

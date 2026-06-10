@@ -9,7 +9,7 @@ import Category from '../models/Category';
 import User from '../models/User';
 import PaymentMethod from '../models/PaymentMethod';
 import { notifyAdmin, notifyUser } from '../utils/telegramNotify';
-import { sendDepositSubmissionEmail, sendOrderConfirmationEmail } from '../utils/emailHelpers';
+import { sendDepositSubmissionEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail } from '../utils/emailHelpers';
 import Admin from '../models/Admin';
 
 // Get user balance
@@ -546,16 +546,38 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
       );
     }
 
-    // Email notification (non-blocking)
+    // Email notifications
+    const orderNumber = `ORD-${order._id.toString().slice(-6).toUpperCase()}`;
+    const orderEmailTasks: Promise<void>[] = [];
+
     if (user?.email) {
-      sendOrderConfirmationEmail(
+      orderEmailTasks.push(sendOrderConfirmationEmail(
         user.email,
         user.username,
-        `ORD-${order._id.toString().slice(-6).toUpperCase()}`,
+        orderNumber,
         product.name,
         totalPrice,
         order._id.toString()
-      );
+      ));
+    }
+
+    const admins = await Admin.find({ email: { $exists: true, $ne: '' } }).select('email username').lean();
+    admins.forEach((admin) => {
+      orderEmailTasks.push(sendAdminOrderNotificationEmail(
+        admin.email,
+        admin.username,
+        orderNumber,
+        user?.username || user?.email || userId,
+        product.name,
+        totalPrice,
+        order._id.toString()
+      ));
+    });
+
+    const orderEmailResults = await Promise.allSettled(orderEmailTasks);
+    const failedOrderEmails = orderEmailResults.filter((result) => result.status === 'rejected').length;
+    if (failedOrderEmails > 0) {
+      console.error(`Failed to send ${failedOrderEmails} order email(s) for order ${order._id.toString()}`);
     }
 
     // Emit socket event for real-time update (if socket is available)
@@ -737,27 +759,37 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
       );
     }
 
-    // Email notifications (non-blocking)
-    sendDepositSubmissionEmail(
-      user.email,
-      user.username,
-      depositAmount,
-      paymentMethod.symbol,
-      transactionId.trim(),
-      deposit._id.toString()
-    );
-    Admin.findOne().select('email').lean().then((admin) => {
-      if (admin?.email) {
-        sendDepositSubmissionEmail(
-          admin.email,
-          'Admin',
-          depositAmount,
-          paymentMethod.symbol,
-          transactionId.trim(),
-          deposit._id.toString()
-        );
-      }
+    // Email notifications
+    const depositEmailTasks: Promise<void>[] = [];
+
+    if (user?.email) {
+      depositEmailTasks.push(sendDepositSubmissionEmail(
+        user.email,
+        user.username,
+        depositAmount,
+        paymentMethod.symbol,
+        transactionId.trim(),
+        deposit._id.toString()
+      ));
+    }
+
+    const admins = await Admin.find({ email: { $exists: true, $ne: '' } }).select('email username').lean();
+    admins.forEach((admin) => {
+      depositEmailTasks.push(sendDepositSubmissionEmail(
+        admin.email,
+        admin.username || 'Admin',
+        depositAmount,
+        paymentMethod.symbol,
+        transactionId.trim(),
+        deposit._id.toString()
+      ));
     });
+
+    const depositEmailResults = await Promise.allSettled(depositEmailTasks);
+    const failedDepositEmails = depositEmailResults.filter((result) => result.status === 'rejected').length;
+    if (failedDepositEmails > 0) {
+      console.error(`Failed to send ${failedDepositEmails} deposit email(s) for deposit ${deposit._id.toString()}`);
+    }
 
     res.json({
       success: true,

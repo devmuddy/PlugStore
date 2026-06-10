@@ -8,7 +8,7 @@ import Category from '../models/Category';
 import Deposit from '../models/Deposit';
 import PaymentMethod from '../models/PaymentMethod';
 import { notifyUser } from '../utils/telegramNotify';
-import { sendDepositApprovedEmail, sendDepositRejectedEmail } from '../utils/emailHelpers';
+import { sendDepositApprovedEmail, sendDepositRejectedEmail, sendBalanceUpdateEmail } from '../utils/emailHelpers';
 import { deleteImage } from '../config/cloudinary';
 
 // Update user balance (admin only)
@@ -104,6 +104,18 @@ export const updateUserBalance = async (req: Request, res: Response): Promise<vo
           `Amount: ${action === 'add' ? '+' : '-'}$${formatMoney(amountNum)}\n` +
           `Previous: $${formatMoney(previousBalance)}\n` +
           `New: $${formatMoney(newBalance)}`
+      );
+    }
+
+    // Email notification
+    if (user?.email) {
+      await sendBalanceUpdateEmail(
+        user.email,
+        user.username,
+        action === 'add' ? 'credit' : 'debit',
+        amountNum,
+        previousBalance,
+        newBalance
       );
     }
 
@@ -564,14 +576,16 @@ export const approveDeposit = async (req: Request, res: Response): Promise<void>
       );
     }
 
-    // Email notification (non-blocking)
-    sendDepositApprovedEmail(
-      depositUser.email,
-      depositUser.username,
-      deposit.amount,
-      deposit.paymentMethod,
-      wallet.balance
-    );
+    // Email notification
+    if (depositUser?.email) {
+      await sendDepositApprovedEmail(
+        depositUser.email,
+        depositUser.username,
+        deposit.amount,
+        deposit.paymentMethod,
+        wallet.balance
+      );
+    }
 
     res.json({
       success: true,
@@ -641,9 +655,9 @@ export const rejectDeposit = async (req: Request, res: Response): Promise<void> 
       );
     }
 
-    // Email notification (non-blocking)
+    // Email notification
     if (rejectedUser?.email) {
-      sendDepositRejectedEmail(
+      await sendDepositRejectedEmail(
         rejectedUser.email,
         rejectedUser.username,
         deposit.amount,

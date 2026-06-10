@@ -19,7 +19,7 @@ const DepositDrawer = ({ open, onClose }: Props) => {
   const [depositForm, setDepositForm] = useState({ amount: '', transactionHash: '' });
   const [amountFocused, setAmountFocused] = useState(false);
 
-  // Hide SmartsUp chat behind the drawer
+  // Hide support chat behind the drawer.
   useEffect(() => {
     if (open) {
       hideSupportWidget();

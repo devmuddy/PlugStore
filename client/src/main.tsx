@@ -9,7 +9,7 @@ import { expandTelegramWebApp, isTelegramMiniApp } from './utils/telegramWebApp'
 
 // Global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
-  // Suppress errors from third-party scripts (like Smartsupp Google Analytics)
+  // Suppress errors from third-party chat/analytics scripts.
   const errorMessage = event.reason?.message || '';
   if (errorMessage.includes('visitorResponded') || 
       errorMessage.includes('googleAnalytics') ||
