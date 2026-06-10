@@ -551,6 +551,7 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
     const orderEmailTasks: Promise<void>[] = [];
 
     if (user?.email) {
+      console.log(`Queueing order confirmation email for order ${order._id.toString()} to ${user.email}`);
       orderEmailTasks.push(sendOrderConfirmationEmail(
         user.email,
         user.username,
@@ -559,10 +560,16 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
         totalPrice,
         order._id.toString()
       ));
+    } else {
+      console.warn(`Skipping customer order email for order ${order._id.toString()}: user has no email`);
     }
 
     const admins = await Admin.find({ email: { $exists: true, $ne: '' } }).select('email username').lean();
+    if (admins.length === 0) {
+      console.warn(`Skipping admin order emails for order ${order._id.toString()}: no admin emails found`);
+    }
     admins.forEach((admin) => {
+      console.log(`Queueing admin order email for order ${order._id.toString()} to ${admin.email}`);
       orderEmailTasks.push(sendAdminOrderNotificationEmail(
         admin.email,
         admin.username,
@@ -763,6 +770,7 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
     const depositEmailTasks: Promise<void>[] = [];
 
     if (user?.email) {
+      console.log(`Queueing deposit submission email for deposit ${deposit._id.toString()} to ${user.email}`);
       depositEmailTasks.push(sendDepositSubmissionEmail(
         user.email,
         user.username,
@@ -771,10 +779,16 @@ export const createDeposit = async (req: Request, res: Response): Promise<void> 
         transactionId.trim(),
         deposit._id.toString()
       ));
+    } else {
+      console.warn(`Skipping customer deposit email for deposit ${deposit._id.toString()}: user has no email`);
     }
 
     const admins = await Admin.find({ email: { $exists: true, $ne: '' } }).select('email username').lean();
+    if (admins.length === 0) {
+      console.warn(`Skipping admin deposit emails for deposit ${deposit._id.toString()}: no admin emails found`);
+    }
     admins.forEach((admin) => {
+      console.log(`Queueing admin deposit email for deposit ${deposit._id.toString()} to ${admin.email}`);
       depositEmailTasks.push(sendDepositSubmissionEmail(
         admin.email,
         admin.username || 'Admin',

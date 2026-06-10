@@ -70,6 +70,9 @@ export const verifyEmailConnection = async (): Promise<boolean> => {
   if (resend) {
     console.log('✅ Email: Resend API configured');
     console.log(`   From: ${formatFromAddress('onboarding@resend.dev')}`);
+    if (!process.env.EMAIL_FROM || process.env.EMAIL_FROM === 'onboarding@resend.dev') {
+      console.warn('   Warning: Set EMAIL_FROM to an address on your verified Resend domain for production delivery.');
+    }
     return true;
   }
 

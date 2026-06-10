@@ -579,6 +579,7 @@ export const approveDeposit = async (req: Request, res: Response): Promise<void>
     // Email notification
     if (depositUser?.email) {
       try {
+        console.log(`Queueing deposit approved email for deposit ${deposit._id.toString()} to ${depositUser.email}`);
         await sendDepositApprovedEmail(
           depositUser.email,
           depositUser.username,
@@ -589,6 +590,8 @@ export const approveDeposit = async (req: Request, res: Response): Promise<void>
       } catch (emailError) {
         console.error(`Failed to send deposit approved email for deposit ${deposit._id.toString()}:`, emailError);
       }
+    } else {
+      console.warn(`Skipping deposit approved email for deposit ${deposit._id.toString()}: user has no email`);
     }
 
     res.json({
@@ -662,6 +665,7 @@ export const rejectDeposit = async (req: Request, res: Response): Promise<void> 
     // Email notification
     if (rejectedUser?.email) {
       try {
+        console.log(`Queueing deposit rejected email for deposit ${deposit._id.toString()} to ${rejectedUser.email}`);
         await sendDepositRejectedEmail(
           rejectedUser.email,
           rejectedUser.username,
@@ -671,6 +675,8 @@ export const rejectDeposit = async (req: Request, res: Response): Promise<void> 
       } catch (emailError) {
         console.error(`Failed to send deposit rejected email for deposit ${deposit._id.toString()}:`, emailError);
       }
+    } else {
+      console.warn(`Skipping deposit rejected email for deposit ${deposit._id.toString()}: user has no email`);
     }
 
     res.json({
