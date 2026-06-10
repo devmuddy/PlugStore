@@ -578,13 +578,17 @@ export const approveDeposit = async (req: Request, res: Response): Promise<void>
 
     // Email notification
     if (depositUser?.email) {
-      await sendDepositApprovedEmail(
-        depositUser.email,
-        depositUser.username,
-        deposit.amount,
-        deposit.paymentMethod,
-        wallet.balance
-      );
+      try {
+        await sendDepositApprovedEmail(
+          depositUser.email,
+          depositUser.username,
+          deposit.amount,
+          deposit.paymentMethod,
+          wallet.balance
+        );
+      } catch (emailError) {
+        console.error(`Failed to send deposit approved email for deposit ${deposit._id.toString()}:`, emailError);
+      }
     }
 
     res.json({
@@ -657,12 +661,16 @@ export const rejectDeposit = async (req: Request, res: Response): Promise<void> 
 
     // Email notification
     if (rejectedUser?.email) {
-      await sendDepositRejectedEmail(
-        rejectedUser.email,
-        rejectedUser.username,
-        deposit.amount,
-        deposit.paymentMethod
-      );
+      try {
+        await sendDepositRejectedEmail(
+          rejectedUser.email,
+          rejectedUser.username,
+          deposit.amount,
+          deposit.paymentMethod
+        );
+      } catch (emailError) {
+        console.error(`Failed to send deposit rejected email for deposit ${deposit._id.toString()}:`, emailError);
+      }
     }
 
     res.json({

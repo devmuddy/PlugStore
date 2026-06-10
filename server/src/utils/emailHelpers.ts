@@ -88,6 +88,7 @@ export const sendBalanceUpdateEmail = async (
     console.log(`Balance update email sent to ${email}`);
   } catch (error) {
     console.error('Failed to send balance update email:', error);
+    throw error;
   }
 };
 
@@ -120,6 +121,7 @@ export const sendOrderConfirmationEmail = async (
     console.log(`Order confirmation email sent to ${email} for order ${orderNumber}`);
   } catch (error) {
     console.error('Failed to send order confirmation email:', error);
+    throw error;
   }
 };
 
@@ -155,6 +157,7 @@ export const sendAdminOrderNotificationEmail = async (
     console.log(`Admin order notification email sent to ${email} for order ${orderNumber}`);
   } catch (error) {
     console.error('Failed to send admin order notification email:', error);
+    throw error;
   }
 };
 
@@ -188,6 +191,7 @@ export const sendDepositSubmissionEmail = async (
     console.log(`Deposit submission email sent to ${email} for deposit ${depositId}`);
   } catch (error) {
     console.error('Failed to send deposit submission email:', error);
+    throw error;
   }
 };
 
@@ -219,6 +223,7 @@ export const sendDepositApprovedEmail = async (
     console.log(`Deposit approved email sent to ${email}`);
   } catch (error) {
     console.error('Failed to send deposit approved email:', error);
+    throw error;
   }
 };
 
@@ -248,5 +253,6 @@ export const sendDepositRejectedEmail = async (
     console.log(`Deposit rejected email sent to ${email}`);
   } catch (error) {
     console.error('Failed to send deposit rejected email:', error);
+    throw error;
   }
 };

@@ -66,7 +66,6 @@ const createTransporter = () => {
 
 // Verify email connection
 export const verifyEmailConnection = async (): Promise<boolean> => {
-  // Resend takes priority
   const resend = getResendClient();
   if (resend) {
     console.log('✅ Email: Resend API configured');
@@ -131,7 +130,8 @@ export const sendMail = async (options: {
   const resend = getResendClient();
   if (resend) {
     const toArray = Array.isArray(options.to) ? options.to : [options.to];
-    const { error } = await resend.emails.send({
+    console.log(`Sending email via Resend to ${toArray.join(', ')}: ${options.subject}`);
+    const { data, error } = await resend.emails.send({
       from,
       to: toArray,
       subject: options.subject,
@@ -140,6 +140,7 @@ export const sendMail = async (options: {
     if (error) {
       throw new Error(`Resend error: ${error.message}`);
     }
+    console.log(`Resend email accepted${data?.id ? `: ${data.id}` : ''}`);
     return;
   }
 
